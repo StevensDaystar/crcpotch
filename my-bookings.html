@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>My Bookings | CRC Church</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<header class="header">
+  <div class="container header__inner">
+    <h1 class="brand">CRC Church</h1>
+    <button class="menu-toggle" aria-expanded="false" aria-label="Toggle menu">☰</button>
+    <nav class="nav" id="primary-nav">
+      <a href="index.html">Home</a>
+      <a href="services.html">Services</a>
+      <a href="book.html">Book</a>
+      <a href="prayer.html">Prayer</a>
+      <a href="connect.html">Connect</a>
+      <a href="volunteer.html">Volunteer</a>
+      <a href="testimony.html">Testimony</a>
+  <a href="admin.html">Admin</a>
+    </nav>
+  </div>
+</header>
+<main class="container">
+  <section class="card">
+    <h3>My Bookings</h3>
+    <div id="bookings-list" class="list"></div>
+  </section>
+</main>
+<footer class="footer"><div class="container"><small>© <span id="year"></span> CRC Potchefstroom & Klerksdorp</small></div></footer>
+<script src="common.js"></script>
+<script>
+'use strict';
+// populate from session (during page lifecycle) if any were added; otherwise fetch? For this demo, keep session-only.
+(function(){
+  document.getElementById('year').textContent = new Date().getFullYear();
+  // This demo relies on same-session updates; a full app would fetch from API with auth.
+  const list = document.getElementById('bookings-list');
+  const cache = window._recentBookings || [];
+  if(!cache.length){ list.innerHTML = '<div class="muted">No bookings yet. Book a service to see it here.</div>'; return; }
+  cache.forEach(b=>{
+    const div = document.createElement('div');
+    div.className = 'booking';
+    div.innerHTML = `<strong>${b.serviceName}</strong><div class=meta>${b.date} • ${b.time} • ${b.attendees} attendee(s) • ${b.location||''}</div><div>Status: ${b.status||'confirmed'}</div>`;
+    list.appendChild(div);
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Volunteer | CRC Church</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<header class="header">
+  <div class="container header__inner">
+    <h1 class="brand">CRC Church</h1>
+    <button class="menu-toggle" aria-expanded="false" aria-label="Toggle menu">☰</button>
+    <nav class="nav" id="primary-nav">
+      <a href="index.html">Home</a>
+      <a href="services.html">Services</a>
+      <a href="book.html">Book</a>
+      <a href="my-bookings.html">My Bookings</a>
+      <a href="prayer.html">Prayer</a>
+      <a href="connect.html">Connect</a>
+      <a href="testimony.html">Testimony</a>
+  <a href="admin.html">Admin</a>
+    </nav>
+  </div>
+</header>
+<main class="container">
+  <section class="hero hero--banner" style="min-height:28vh">
+    <div class="hero__bg" style="background-image:url('./crc_church_images/photo_6_2025-08-16_11-12-50.jpg')"></div>
+    <div class="hero__overlay"><div class="container"><h2 class="hero__title">Volunteer</h2><p class="hero__subtitle">Serve with us and make a difference</p></div></div>
+  </section>
+  <section class="card" style="margin-top:16px">
+    <h3>Volunteer Signup</h3>
+    <p class="muted">Join one of our ministry teams and use your gifts to serve God and others.</p>
+    <form id="volunteer-form" class="form">
+      <label>
+        <span>Your Name</span>
+        <input type="text" id="vol-name" required />
+      </label>
+      <label>
+        <span>Email</span>
+        <input type="email" id="vol-email" required />
+      </label>
+      <label>
+        <span>Ministries</span>
+        <select id="vol-ministries" multiple>
+          <option>Worship</option>
+          <option>Kids</option>
+          <option>Ushering</option>
+          <option>Media</option>
+          <option>Hospitality</option>
+        </select>
+      </label>
+      <label>
+        <span>Availability</span>
+        <input type="text" id="vol-availability" placeholder="e.g. Sundays AM/Eve" />
+      </label>
+      <button class="btn" type="submit">Sign Up</button>
+      <div id="vol-message" class="form__message" aria-live="polite"></div>
+    </form>
+  </section>
+</main>
+<footer class="footer"><div class="container"><small>© <span id="year"></span> CRC Potchefstroom & Klerksdorp</small></div></footer>
+<script src="common.js"></script>
+<script>
+'use strict';
+const API = (window.API_BASE||'http://localhost:5000') + '/api';
+(function(){
+  document.getElementById('year').textContent = new Date().getFullYear();
+  const form = document.getElementById('volunteer-form');
+  const msg = document.getElementById('vol-message');
+  form.addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    const ministriesEl = document.getElementById('vol-ministries');
+    const payload = {
+      name: document.getElementById('vol-name').value.trim(),
+      email: document.getElementById('vol-email').value.trim(),
+      ministries: Array.from(ministriesEl.selectedOptions).map(o=>o.value),
+      availability: document.getElementById('vol-availability').value.trim(),
+    };
+    try{
+      const res = await fetch(`${API}/volunteers`,{ method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)});
+      if(!res.ok) throw new Error('Failed to submit');
+      msg.textContent = 'Thank you for stepping up to serve!'; msg.style.color = '#2e7d32';
+      form.reset();
+    }catch(err){ msg.textContent = 'Submission failed'; msg.style.color = '#d32f2f'; }
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Book | CRC Church</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="header">
+    <div class="container header__inner">
+      <h1 class="brand">CRC Church</h1>
+      <button class="menu-toggle" aria-expanded="false" aria-label="Toggle menu">☰</button>
+      <nav class="nav" id="primary-nav">
+        <a href="index.html">Home</a>
+        <a href="services.html">Services</a>
+        <a href="my-bookings.html">My Bookings</a>
+        <a href="prayer.html">Prayer</a>
+        <a href="connect.html">Connect</a>
+        <a href="volunteer.html">Volunteer</a>
+        <a href="testimony.html">Testimony</a>
+  <a href="admin.html">Admin</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero hero--banner" style="min-height:28vh">
+      <div class="hero__bg" style="background-image:url('./crc_church_images/photo_1_2025-08-16_11-12-50.jpg')"></div>
+      <div class="hero__overlay"><div class="container"><h2 class="hero__title">Book Your Visit</h2><p class="hero__subtitle">Plan to worship with us</p></div></div>
+    </section>
+    <section class="card" style="margin-top:16px">
+      <h3>Book a Service</h3>
+      <p class="muted">Select a service and let us know you're coming. We can't wait to meet you!</p>
+      <form id="booking-form" class="form">
+        <label>
+          <span>Service</span>
+          <select id="service-select" required></select>
+        </label>
+        <label>
+          <span>Date</span>
+          <input type="date" id="date" required />
+        </label>
+        <label>
+          <span>Time</span>
+          <select id="time" required>
+            <option value="08:30">08:30</option>
+            <option value="10:00">10:00</option>
+            <option value="17:30">17:30</option>
+            <option value="18:00">18:00</option>
+            <option value="19:30">19:30</option>
+          </select>
+        </label>
+        <label>
+          <span>Your Name</span>
+          <input type="text" id="name" placeholder="Full name" required />
+        </label>
+        <label>
+          <span>Email</span>
+          <input type="email" id="email" placeholder="you@example.com" required />
+        </label>
+        <label>
+          <span>Attendees</span>
+          <input type="number" id="attendees" min="1" value="1" required />
+        </label>
+        <label>
+          <span>Special Requests (optional)</span>
+          <textarea id="requests" rows="3" placeholder="Any specific needs or prayer requests"></textarea>
+        </label>
+        <button class="btn" type="submit">Confirm Booking</button>
+        <div id="form-message" class="form__message" aria-live="polite"></div>
+      </form>
+    </section>
+
+    <section class="card">
+      <h3>My Bookings</h3>
+      <div id="bookings-list" class="list"></div>
+    </section>
+  </main>
+
+  <div class="modal-overlay" id="confirm-modal" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+      <div class="modal__header">
+        <h3 id="confirm-title" style="margin:0">Booking Confirmed</h3>
+        <button class="modal__close" id="close-confirm" aria-label="Close">✕</button>
+      </div>
+      <div id="confirm-body" class="list"></div>
+      <div class="inline" style="margin-top:12px">
+        <button class="btn" id="confirm-ok">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer"><div class="container"><small>© <span id="year"></span> CRC Potchefstroom & Klerksdorp</small></div></footer>
+  <script src="common.js"></script>
+  <script src="booking.js"></script>
+</body>
+</html>

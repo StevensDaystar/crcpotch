@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Testimony | CRC Church</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<header class="header">
+  <div class="container header__inner">
+    <h1 class="brand">CRC Church</h1>
+    <button class="menu-toggle" aria-expanded="false" aria-label="Toggle menu">☰</button>
+    <nav class="nav" id="primary-nav">
+      <a href="index.html">Home</a>
+      <a href="services.html">Services</a>
+      <a href="book.html">Book</a>
+      <a href="my-bookings.html">My Bookings</a>
+      <a href="prayer.html">Prayer</a>
+      <a href="connect.html">Connect</a>
+      <a href="volunteer.html">Volunteer</a>
+  <a href="admin.html">Admin</a>
+    </nav>
+  </div>
+</header>
+<main class="container">
+  <section class="hero hero--banner" style="min-height:28vh">
+    <div class="hero__bg" style="background-image:url('./crc_church_images/photo_2_2025-08-16_11-12-50.jpg')"></div>
+    <div class="hero__overlay"><div class="container"><h2 class="hero__title">Share Your Testimony</h2><p class="hero__subtitle">Tell us how God has worked in your life</p></div></div>
+  </section>
+  <section class="card" style="margin-top:16px">
+    <h3>Your Story Matters</h3>
+    <p class="muted">Share how God has transformed your life. Your testimony can encourage others in their faith journey.</p>
+    <form id="testimony-form" class="form">
+      <label>
+        <span>Your Name</span>
+        <input type="text" id="test-name" required />
+      </label>
+      <label>
+        <span>Email (optional)</span>
+        <input type="email" id="test-email" />
+      </label>
+      <label>
+        <span>Your Story</span>
+        <textarea id="test-text" rows="4" required></textarea>
+      </label>
+      <label>
+        <input type="checkbox" id="test-permission" /> I give permission to share
+      </label>
+      <button class="btn" type="submit">Submit</button>
+      <div id="test-message" class="form__message" aria-live="polite"></div>
+    </form>
+  </section>
+</main>
+<footer class="footer"><div class="container"><small>© <span id="year"></span> CRC Potchefstroom & Klerksdorp</small></div></footer>
+<script src="common.js"></script>
+<script>
+'use strict';
+const API = (window.API_BASE||'http://localhost:5000') + '/api';
+(function(){
+  document.getElementById('year').textContent = new Date().getFullYear();
+  const form = document.getElementById('testimony-form');
+  const msg = document.getElementById('test-message');
+  form.addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    const payload = {
+      name: document.getElementById('test-name').value.trim(),
+      email: document.getElementById('test-email').value.trim(),
+      testimony: document.getElementById('test-text').value.trim(),
+      permissionToShare: document.getElementById('test-permission').checked,
+    };
+    try{
+      const res = await fetch(`${API}/testimonies`,{ method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)});
+      if(!res.ok) throw new Error('Failed to submit');
+      msg.textContent = 'Thank you for sharing your story!'; msg.style.color = '#2e7d32';
+      form.reset();
+    }catch(err){ msg.textContent = 'Submission failed'; msg.style.color = '#d32f2f'; }
+  });
+})();
+</script>
+</body>
+</html>

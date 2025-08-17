@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CRC Church | Service Booking Demo</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="header">
+    <div class="container header__inner">
+      <h1 class="brand">CRC Church</h1>
+      <button class="menu-toggle" aria-expanded="false" aria-label="Toggle menu">☰</button>
+      <nav class="nav" id="primary-nav">
+        <a href="services.html">Services</a>
+        <a href="book.html" id="hero-book-btn">Book</a>
+        <a href="my-bookings.html">My Bookings</a>
+        <a href="prayer.html">Prayer</a>
+        <a href="connect.html">Connect</a>
+        <a href="volunteer.html">Volunteer</a>
+        <a href="testimony.html">Testimony</a>
+  <a href="admin.html">Admin</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section id="hero" class="hero hero--banner">
+      <div class="hero__bg" id="hero-bg" aria-hidden="true"></div>
+      <div class="hero__overlay">
+        <div class="container">
+          <h2 class="hero__title">Christian Revival Church</h2>
+          <p class="hero__subtitle">Potchefstroom & Klerksdorp | Win the lost at any cost, mend nets, build one church in many locations</p>
+          <div class="hero__ctas">
+            <a class="btn" href="book.html">Book a Service</a>
+            <a class="btn" href="services.html" style="background:#4B0000">View Services</a>
+          </div>
+        </div>
+      </div>
+    </section>
+    <div class="container">
+      <section class="card" style="margin-top:16px">
+        <h3>Service Times</h3>
+        <div class="grid">
+          <div class="service">
+            <h4>Potchefstroom</h4>
+            <div class="meta">📍 Dagbreek Estates</div>
+            <p>Sunday: 08:30 & 18:00</p>
+          </div>
+          <div class="service">
+            <h4>Klerksdorp</h4>
+            <div class="meta">📍 Portuguese Hall</div>
+            <p>Sunday: 10:00 & 18:00</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h3>About CRC</h3>
+        <p>Part of the Christian Revival Church movement founded in 1994. We believe in the authority of the Bible, Trinity, salvation by faith, Holy Spirit baptism, divine healing, and holiness.</p>
+        <p>Our mission: <em>Win the lost at any cost, mend nets, build one church in many locations.</em></p>
+        <p>We welcome all races, ages, and backgrounds to worship with us.</p>
+      </section>
+    </div>
+  </main>
+
+  <!-- Booking Modal -->
+  <div class="modal-overlay" id="booking-modal" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="booking-title">
+      <div class="modal__header">
+        <h3 id="booking-title" style="margin:0">Book a Service</h3>
+        <button class="modal__close" id="close-booking" aria-label="Close">✕</button>
+      </div>
+      <form id="booking-form" class="form">
+        <label>
+          <span>Service</span>
+          <select id="service-select" required></select>
+        </label>
+        <label>
+          <span>Date</span>
+          <input type="date" id="date" required />
+        </label>
+        <label>
+          <span>Time</span>
+          <select id="time" required>
+            <option value="08:30">08:30</option>
+            <option value="10:00">10:00</option>
+            <option value="17:30">17:30</option>
+            <option value="18:00">18:00</option>
+            <option value="19:30">19:30</option>
+          </select>
+        </label>
+        <label>
+          <span>Your Name</span>
+          <input type="text" id="name" placeholder="Full name" required />
+        </label>
+        <label>
+          <span>Email</span>
+          <input type="email" id="email" placeholder="you@example.com" required />
+        </label>
+        <label>
+          <span>Attendees</span>
+          <input type="number" id="attendees" min="1" value="1" required />
+        </label>
+        <label>
+          <span>Special Requests (optional)</span>
+          <textarea id="requests" rows="3" placeholder="Any specific needs or prayer requests"></textarea>
+        </label>
+        <button class="btn" type="submit">Confirm Booking</button>
+        <div id="form-message" class="form__message" aria-live="polite"></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Confirmation Modal -->
+  <div class="modal-overlay" id="confirm-modal" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+      <div class="modal__header">
+        <h3 id="confirm-title" style="margin:0">Booking Confirmed</h3>
+        <button class="modal__close" id="close-confirm" aria-label="Close">✕</button>
+      </div>
+      <div id="confirm-body" class="list"></div>
+      <div class="inline" style="margin-top:12px">
+        <button class="btn" id="confirm-ok">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="container">
+      <small>© <span id="year"></span> Christian Revival Church Potchefstroom & Klerksdorp</small>
+      <div style="margin-top:8px">
+        <small>📞 018 004 0011 | ✉️ info@crcpotch.co.za</small>
+      </div>
+    </div>
+  </footer>
+
+  <script src="common.js"></script>
+  <script src="home.js"></script>
+</body>
+</html>

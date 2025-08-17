@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Connect | CRC Church</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<header class="header">
+  <div class="container header__inner">
+    <h1 class="brand">CRC Church</h1>
+    <button class="menu-toggle" aria-expanded="false" aria-label="Toggle menu">☰</button>
+    <nav class="nav" id="primary-nav">
+      <a href="index.html">Home</a>
+      <a href="services.html">Services</a>
+      <a href="book.html">Book</a>
+      <a href="my-bookings.html">My Bookings</a>
+      <a href="prayer.html">Prayer</a>
+      <a href="volunteer.html">Volunteer</a>
+      <a href="testimony.html">Testimony</a>
+  <a href="admin.html">Admin</a>
+    </nav>
+  </div>
+</header>
+<main class="container">
+  <section class="hero hero--banner" style="min-height:28vh">
+    <div class="hero__bg" style="background-image:url('./crc_church_images/photo_5_2025-08-16_11-12-50.jpg')"></div>
+    <div class="hero__overlay"><div class="container"><h2 class="hero__title">Connect With Us</h2><p class="hero__subtitle">Take your next step in faith and community</p></div></div>
+  </section>
+  <section class="card" style="margin-top:16px">
+    <h3>Connect Card</h3>
+    <p class="muted">Let us know how we can help you grow in your faith journey.</p>
+    <form id="connect-form" class="form">
+      <label>
+        <span>Your Name</span>
+        <input type="text" id="connect-name" required />
+      </label>
+      <label>
+        <span>Email</span>
+        <input type="email" id="connect-email" required />
+      </label>
+      <label>
+        <span>Phone</span>
+        <input type="tel" id="connect-phone" />
+      </label>
+      <label>
+        <span>I'm interested in</span>
+        <select id="connect-interested" multiple>
+          <option>Homecell</option>
+          <option>Baptism</option>
+          <option>Serving</option>
+          <option>Salvation follow-up</option>
+        </select>
+      </label>
+      <label>
+        <span>Notes</span>
+        <textarea id="connect-notes" rows="3"></textarea>
+      </label>
+      <button class="btn" type="submit">Send</button>
+      <div id="connect-message" class="form__message" aria-live="polite"></div>
+    </form>
+  </section>
+</main>
+<footer class="footer"><div class="container"><small>© <span id="year"></span> CRC Potchefstroom & Klerksdorp</small></div></footer>
+<script src="common.js"></script>
+<script>
+'use strict';
+const API = (window.API_BASE||'http://localhost:5000') + '/api';
+(function(){
+  document.getElementById('year').textContent = new Date().getFullYear();
+  const form = document.getElementById('connect-form');
+  const msg = document.getElementById('connect-message');
+  form.addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    const interestedEl = document.getElementById('connect-interested');
+    const payload = {
+      name: document.getElementById('connect-name').value.trim(),
+      email: document.getElementById('connect-email').value.trim(),
+      phone: document.getElementById('connect-phone').value.trim(),
+      interestedIn: Array.from(interestedEl.selectedOptions).map(o=>o.value),
+      notes: document.getElementById('connect-notes').value.trim(),
+    };
+    try{
+      const res = await fetch(`${API}/connect`,{ method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)});
+      if(!res.ok) throw new Error('Failed to submit');
+      msg.textContent = 'Thanks! We will contact you soon.'; msg.style.color = '#2e7d32';
+      form.reset();
+    }catch(err){ msg.textContent = 'Submission failed'; msg.style.color = '#d32f2f'; }
+  });
+})();
+</script>
+</body>
+</html>

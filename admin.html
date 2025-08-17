@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin | CRC Church</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<header class="header">
+  <div class="container header__inner">
+    <h1 class="brand">CRC Church</h1>
+    <button class="menu-toggle" aria-expanded="false" aria-label="Toggle menu">☰</button>
+    <nav class="nav" id="primary-nav">
+      <a href="index.html">Home</a>
+      <a href="services.html">Services</a>
+      <a href="book.html">Book</a>
+      <a href="my-bookings.html">My Bookings</a>
+      <a href="prayer.html">Prayer</a>
+      <a href="connect.html">Connect</a>
+      <a href="volunteer.html">Volunteer</a>
+  <a href="testimony.html">Testimony</a>
+    </nav>
+  </div>
+</header>
+<main class="container">
+  <section class="card">
+    <h3>Admin Dashboard</h3>
+    <div class="form" id="admin-auth">
+      <label>
+        <span>Email</span>
+        <input type="email" id="admin-email" placeholder="admin@example.com" />
+      </label>
+      <label>
+        <span>Password</span>
+        <input type="password" id="admin-password" placeholder="Password" />
+      </label>
+      <div class="inline">
+        <button class="btn" id="admin-login">Login</button>
+        <button class="btn" id="admin-logout" style="display:none">Logout</button>
+      </div>
+      <div id="admin-message" class="form__message" aria-live="polite"></div>
+    </div>
+    <div class="inline">
+      <button class="btn" data-export="bookings">Export Bookings CSV</button>
+      <button class="btn" data-export="prayer">Export Prayer CSV</button>
+      <button class="btn" data-export="connect">Export Connect CSV</button>
+      <button class="btn" data-export="volunteers">Export Volunteers CSV</button>
+      <button class="btn" data-export="testimonies">Export Testimonies CSV</button>
+    </div>
+    <div id="admin-summary" class="list" style="margin-top:10px"></div>
+    <div id="admin-lists" class="grid"></div>
+  </section>
+</main>
+<footer class="footer"><div class="container"><small>© <span id="year"></span> CRC Potchefstroom & Klerksdorp</small></div></footer>
+<script src="common.js"></script>
+<script>
+'use strict';
+const API = (window.API_BASE||'http://localhost:5000') + '/api';
+let ADMIN_TOKEN = localStorage.getItem('admin_token') || '';
+const adminMsg = document.getElementById('admin-message');
+const btnLogin = document.getElementById('admin-login');
+const btnLogout = document.getElementById('admin-logout');
+
+function updateAuthUI(){
+  if(ADMIN_TOKEN){ btnLogin.style.display='none'; btnLogout.style.display='inline-block'; adminMsg.textContent='Logged in as admin'; adminMsg.style.color='#2e7d32'; }
+  else { btnLogin.style.display='inline-block'; btnLogout.style.display='none'; adminMsg.textContent=''; }
+}
+btnLogin?.addEventListener('click', async ()=>{
+  const email = document.getElementById('admin-email').value.trim();
+  const password = document.getElementById('admin-password').value.trim();
+  try{ const res = await fetch(`${API}/auth/login`,{ method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ email, password })}); const data = await res.json(); if(!res.ok) throw new Error(data.message||'Login failed'); ADMIN_TOKEN = data.token; localStorage.setItem('admin_token', ADMIN_TOKEN); updateAuthUI(); loadAdmin(); }
+  catch(err){ adminMsg.textContent = err.message; adminMsg.style.color = '#d32f2f'; }
+});
+btnLogout?.addEventListener('click', ()=>{ ADMIN_TOKEN=''; localStorage.removeItem('admin_token'); updateAuthUI(); document.getElementById('admin-summary').innerHTML=''; document.getElementById('admin-lists').innerHTML=''; });
+updateAuthUI();
+
+async function authFetch(url, opts={}){ const headers = Object.assign({}, opts.headers||{}, ADMIN_TOKEN ? { Authorization: 'Bearer '+ADMIN_TOKEN } : {}); const res = await fetch(url, { ...opts, headers }); if(res.status===401 || res.status===403) throw new Error('Unauthorized'); return res; }
+
+async function loadAdmin(){
+  if(!ADMIN_TOKEN) return;
+  try{
+    const res = await authFetch(`${API}/admin/analytics/summary`);
+    const data = await res.json();
+    const el = document.getElementById('admin-summary');
+    el.innerHTML = `<div class="booking">Totals — Bookings: ${data.totals.bookings}, Prayer: ${data.totals.prayers}, Connect: ${data.totals.connects}, Volunteers: ${data.totals.volunteers}, Testimonies: ${data.totals.testimonies}</div>`;
+    await Promise.all([
+      loadList('prayer','/prayer'),
+      loadList('connect','/connect'),
+      loadList('volunteers','/volunteers'),
+      loadList('testimonies','/testimonies')
+    ]);
+  }catch(err){ adminMsg.textContent = 'Admin load failed: '+err.message; adminMsg.style.color = '#d32f2f'; }
+}
+
+async function loadList(name, path){
+  const wrap = document.getElementById('admin-lists');
+  const panel = document.createElement('div'); panel.className = 'card';
+  panel.innerHTML = `<h4 style="margin:0 0 6px 0">${name}</h4><div class="list" id="list-${name}"></div>`;
+  wrap.appendChild(panel);
+  try{
+    const res = await authFetch(`${API}${path}`);
+    const data = await res.json();
+    const list = panel.querySelector(`#list-${name}`);
+    data.slice(0,30).forEach(item => {
+      const div = document.createElement('div');
+      div.className = 'booking';
+      const summary = item.name || item.userName || item.email || item._id;
+      const status = item.status || 'n/a';
+      div.innerHTML = `<div><strong>${summary}</strong> <span class="meta">${new Date(item.createdAt).toLocaleString()}</span></div><div>Status: <em>${status}</em></div>`;
+      const btn = document.createElement('button');
+      btn.className = 'btn'; btn.style.marginTop = '6px'; btn.textContent = 'Mark Reviewed';
+      btn.onclick = async () => {
+        try{ const res2 = await authFetch(`${API}${path}/${item._id}/status`,{ method:'PATCH', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify({ status: 'reviewed' }) }); if(!res2.ok) throw new Error('Update failed'); btn.textContent = 'Reviewed'; btn.disabled = true; }
+        catch(err){ alert('Failed: '+err.message); }
+      };
+      list.appendChild(div); list.appendChild(btn);
+    });
+  }catch(err){
+    const list = panel.querySelector(`#list-${name}`);
+    list.innerHTML = `<div class="muted">Failed to load: ${err.message}</div>`;
+  }
+}
+
+document.querySelectorAll('[data-export]').forEach(btn=>{
+  btn.onclick = async ()=>{
+    const entity = btn.getAttribute('data-export');
+    try{ const res = await authFetch(`${API}/admin/export/${entity}.csv`); const blob = await res.blob(); const url = URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=`${entity}.csv`; a.click(); URL.revokeObjectURL(url);}catch(err){ adminMsg.textContent = 'Export failed: '+err.message; adminMsg.style.color = '#d32f2f'; }
+  };
+});
+
+loadAdmin();
+</script>
+</body>
+</html>

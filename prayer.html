@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Prayer | CRC Church</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<header class="header">
+  <div class="container header__inner">
+    <h1 class="brand">CRC Church</h1>
+    <button class="menu-toggle" aria-expanded="false" aria-label="Toggle menu">☰</button>
+    <nav class="nav" id="primary-nav">
+      <a href="index.html">Home</a>
+      <a href="services.html">Services</a>
+      <a href="book.html">Book</a>
+      <a href="my-bookings.html">My Bookings</a>
+      <a href="connect.html">Connect</a>
+      <a href="volunteer.html">Volunteer</a>
+      <a href="testimony.html">Testimony</a>
+  <a href="admin.html">Admin</a>
+    </nav>
+  </div>
+</header>
+<main class="container">
+  <section class="hero hero--banner" style="min-height:28vh">
+    <div class="hero__bg" style="background-image:url('./crc_church_images/photo_4_2025-08-16_11-12-50.jpg')"></div>
+    <div class="hero__overlay"><div class="container"><h2 class="hero__title">Prayer Request</h2><p class="hero__subtitle">We believe in the power of prayer</p></div></div>
+  </section>
+  <section class="card" style="margin-top:16px">
+    <h3>Submit Your Prayer Request</h3>
+    <p class="muted">Our prayer team will lift up your request. All confidential requests are kept private.</p>
+    <form id="prayer-form" class="form">
+      <label>
+        <span>Your Name</span>
+        <input type="text" id="prayer-name" required />
+      </label>
+      <label>
+        <span>Email</span>
+        <input type="email" id="prayer-email" required />
+      </label>
+      <label>
+        <span>Category</span>
+        <select id="prayer-category">
+          <option>Healing</option>
+          <option>Family</option>
+          <option>Finance</option>
+          <option>Salvation</option>
+          <option>Guidance</option>
+          <option>Other</option>
+        </select>
+      </label>
+      <label>
+        <span>Request</span>
+        <textarea id="prayer-text" rows="3" required></textarea>
+      </label>
+      <label>
+        <input type="checkbox" id="prayer-confidential" /> Confidential
+      </label>
+      <button class="btn" type="submit">Submit Request</button>
+      <div id="prayer-message" class="form__message" aria-live="polite"></div>
+    </form>
+  </section>
+</main>
+<footer class="footer"><div class="container"><small>© <span id="year"></span> CRC Potchefstroom & Klerksdorp</small></div></footer>
+<script src="common.js"></script>
+<script>
+'use strict';
+const API = (window.API_BASE||'http://localhost:5000') + '/api';
+(function(){
+  document.getElementById('year').textContent = new Date().getFullYear();
+  const form = document.getElementById('prayer-form');
+  const msg = document.getElementById('prayer-message');
+  form.addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    const payload = {
+      name: document.getElementById('prayer-name').value.trim(),
+      email: document.getElementById('prayer-email').value.trim(),
+      category: document.getElementById('prayer-category').value,
+      request: document.getElementById('prayer-text').value.trim(),
+      confidential: document.getElementById('prayer-confidential').checked,
+    };
+    try{
+      const res = await fetch(`${API}/prayer`,{ method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)});
+      if(!res.ok) throw new Error('Failed to submit');
+      msg.textContent = 'Thank you. Our team will pray with you.'; msg.style.color = '#2e7d32';
+      form.reset();
+    }catch(err){ msg.textContent = 'Submission failed'; msg.style.color = '#d32f2f'; }
+  });
+})();
+</script>
+</body>
+</html>
